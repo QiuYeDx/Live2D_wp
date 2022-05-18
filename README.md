@@ -39,6 +39,7 @@ wp_enqueue_script( 'message', get_template_directory_uri() . '/live2d/js/message
 </script>
 ```
 **后续也可以添加其他Live2D素材包，在此修改json路径即可。**
+
 到这里以后，还有一个天坑，有些同学会发现文字一直不显示，只有模型在，那么请在message.js中把所有代码放在这个花括号中：
 
 ```js
