@@ -1,50 +1,54 @@
-原项目出自一个大佬的博客，猫与向日葵。[阅读原文](https://imjad.cn/archives/lab/add-dynamic-poster-girl-with-live2d-to-your-blog-02 "阅读原文")  
-本文对于原文和原作有删改。  
+## 前言
 
-嘛，不少人对这个 Live2D 看板娘很感兴趣呢！
-纷纷让我写文章，而学长也是懒癌晚期，一直拖到现在 ~
+这几年已经有许多大佬在自家博客引入看板娘了，而且相关仓库也比较丰富。不过都不完美，各有一些问题，且已经数年没有更新相关教程了，尤其是在WordPress中引入，会有许多格外的步骤需要做，我已经摸着石头过河了，接下来就把方法介绍给有兴趣的朋友们吧～
 
-好了，还是准备开始我们的教程吧！
-俗话说：“授人以鱼不如授人以渔”，但是说这个“渔”比较难教，还是给条“鱼”你完事了。
+## 步骤
 
 ### 准备工作
-首先到我的 [Github](https://github.com/galnetwen/Live2D "Github") 去下载整理后的 Live2D 代码，毕竟整理后的话好下手 ~
 
-下载后解压代码到你的博客网站根目录去。（目录位置可以自定义）
+在我的 仓库 中下载源文件，并把live2d文件夹上传至自己的服务器，置于博客文件夹下。PS：可以放在目录下的任意位置，比如根目录(…/wp-blog/)或主题目录(…/wp-blog/wp-content/themes/***/)下。
 
-然后把解压出来的文件夹改名为：live2d 。
+### 正式开始
 
-### 正式开工
-在你博客程序头部文件（header）引入界面样式，在 head 标签内插入如下代码：
-```html
-<link rel="stylesheet" href="/live2d/css/live2d.css" />
+在当前主题的functions.php文件中找到这几行：
+```php
+function my_style__scripts() {	
+	wp_enqueue_script('jquery');	
+        ......
+}
 ```
+为了能正确调用jQuery并正确添加JS包，在“……”的位置添加以下语句：
 
-在 body 标签内合适的位置插入 Live2D 看板娘的元素，按照 Html 书写规范写 ~
-```html
-<div id="landlord">
-    <div class="message" style="opacity:0"></div>
-    <canvas id="live2d" width="280" height="250" class="live2d"></canvas>
-    <div class="hide-button">隐藏</div>
-</div>
+```php
+wp_enqueue_style( 'live2d-css', get_template_directory_uri() . '/live2d/css/live2d.css' );
+wp_enqueue_script( 'live2d', get_template_directory_uri() . '/live2d/js/live2d.js', array('jquery', "jquery-ui-accordion", "jquery-ui-core", "jquery-ui-tabs"), '', true );
+wp_enqueue_script( 'message', get_template_directory_uri() . '/live2d/js/message.js', array('jquery', "jquery-ui-accordion", "jquery-ui-core", "jquery-ui-tabs"), '', false );
 ```
+注意引号中的路径（比如’/live2d/css/live2d.css’）是相对于当前主题的路径的（即…/wp-blog/wp-content/themes/${主题名字}/live2d/css/live2d.css），要匹配到你的live2d的位置。
 
-在你博客程序页脚文件（footer）引入脚本，在 body 标签结束前插入如下代码：
-```html
+然后在你博客当前主题的页脚文件（footer.php）引入脚本，在 body 标签结束前插入如下代码：
+
+```php
 <script type="text/javascript">
     var message_Path = '/live2d/'
-    var home_Path = 'https://haremu.com/'  //此处修改为你的域名，必须带斜杠
+    var home_Path = 'https://qiuyedx.com/'  //此处修改为你的域名，必须带斜杠
 </script>
-<script type="text/javascript" src="/live2d/js/live2d.js"></script>
-<script type="text/javascript" src="/live2d/js/message.js"></script>
 <script type="text/javascript">
-    loadlive2d("live2d", "/live2d/model/tia/model.json");
+    loadlive2d("live2d", "/live2d/model/tia/model.json"); 
+    //注意此处路径是相对于博客系统根目录的，即.../wp-blog/live2d/model/tia/model.json"，按自己放的位置填写即可
 </script>
 ```
+到这里以后，还有一个天坑，有些同学会发现文字一直不显示，只有模型在，那么请在message.js中把所有代码放在这个花括号中：
 
-鼠标放在页面某个元素上时，需要 Live2D 看板娘提示的请修改 message.json 文件。
+```js
+jQuery(document).ready(function($){
+    //全部代码都放在这里
+}
+```
+最后，鼠标放在页面某个元素上时，需要 Live2D 看板娘提示的请修改 message.json 文件。后续也可以添加其他Live2D素材包，在此修改json路径即可。
 
-**示例：**
+示例：
+
 ```json
 {
     "mouseover": [
@@ -65,36 +69,4 @@
     ]
 }
 ```
-
-然后，刷新你的博客页面，看看效果吧！
-
-注意路径别弄错了噢 ~  
-PHP 程序推荐使用主题函数获取绝对路径。
-
-**问：“为什么这个 Live2D 没有换装功能哎？”**  
-**答：“自己研究去。”**
-  
-~~其实，就是动态改变 model.json 内的服装字段，达到随机服装的效果……~~
-
-### 模型欣赏
-![](https://haremu.com/wp-content/uploads/2017/12/QQ%E6%88%AA%E5%9B%BE20171202210923.png)  
-![](https://haremu.com/wp-content/uploads/2017/12/QQ%E6%88%AA%E5%9B%BE20171202210951.png)
-
-### 模型说明
-> Live2D 并不是一种先进的技术，它产生的效果，都是用基本的平移、旋转、透明、曲面变形等操作实现的。
-最终的效果与贴图关系很大，而每一个动作，都需要制作师的精细调整。
-这是一个需要消耗大量时间精力的过程，因此质量好的模型并不多，质量好的也一般是在游戏中，版权受到保护，**不能随意使用**。
-
-本文章中所用模型解包自 [药水制作师](https://play.google.com/store/apps/details?id=com.sinsiroad.potionmaker&hl=zh_CN "药水制作师") 手机游戏，版权归该官方所有。  
-（没错，我也安利下这款 ~~萝莉控~~ 游戏。啪！）  
-![](https://haremu.com/wp-content/uploads/2017/11/%E6%BB%91%E7%A8%BD%E6%89%93%E8%84%B8.png)
-
-### 更新日志
-**2017.12.30**
-- 主程序更新至原博主 v1.0.4 版本，添加了跨域画布支持；服装字段支持使用绝对地址，服装可以使用外部地址了，比如 CDN ，支持 SSL链接 。
-- 消息提示程序一些细节修改，一言 API 修改为 [http://hitokoto.cn](http://hitokoto.cn "http://hitokoto.cn") 官方。
-- 添加一个 Live2D 元素的隐藏按钮，隐藏后，需要刷新页面才能出现，因为按钮也被隐藏了 ~
-
-**2018.08.10**
-- 主程序更新至原博主 v1.0.5 版本。
-- 修正一言 API 的 URL 地址。
+到此为止。刷新你的博客页面，看看效果吧！
