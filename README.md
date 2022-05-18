@@ -45,7 +45,7 @@ jQuery(document).ready(function($){
     //全部代码都放在这里
 }
 ```
-最后，鼠标放在页面某个元素上时，需要 Live2D 看板娘提示的请修改 message.json 文件。后续也可以添加其他Live2D素材包，在此修改json路径即可。
+最后，鼠标放在页面某个元素上时，需要 Live2D 看板娘提示的请修改 message.json 文件。
 
 示例：
 
